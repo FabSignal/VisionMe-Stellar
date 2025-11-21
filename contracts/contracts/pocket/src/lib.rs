@@ -35,7 +35,7 @@ pub struct PocketContract;
 #[contractimpl]
 impl PocketContract {
     /// Crear un nuevo pocket de ahorro
-    fn __constructor(env: Env, vault: Address, asset: Address){
+    pub fn __constructor(env: Env, vault: Address, asset: Address){
         env.storage()
             .instance()
             .set(&DataKey::Vault, &vault);

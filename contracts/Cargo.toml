@@ -1,9 +1,8 @@
 [workspace]
 resolver = "2"
 members = [
-  "contracts/*",
+  "contracts/pocket",
 ]
-exclude = ["contracts/wasms"]
 
 [workspace.dependencies]
 soroban-sdk = "23.0.3"
