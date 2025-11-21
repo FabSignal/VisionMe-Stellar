@@ -12,5 +12,8 @@
   },
   "devDependencies": {
     "supabase": "^1.200.3"
+  },
+  "dependencies": {
+    "@soroswap/sdk": "^0.3.8"
   }
 }
