@@ -137,207 +137,44 @@ Contribute → Streak Increases → Avatar Celebrates → SBT Earned
 ### System Overview
 
 ```
-┌──────────────────────────────────────────────────────────────────┐
-│                      Frontend (React/Next.js)                    │
-│  • Crossmint Social Wallet UI                                    │
-│  • Avatar visualization                                          │
-│  • Pocket CRUD, Deposit flow                                     │
-│  • Streak & SBT display                                          │
-│                                                                  │
-│  TOKENS USED BY FRONTEND:                                        │
-│  • JWT (VisionMe) - stored in localStorage, used for API calls   │
-│  • Crossmint Token - from SDK, used for transaction signing      │
-└────────────────┬─────────────────────────────────┬───────────────┘
-                 │                                 │
-        ┌────────▼──────────┐           ┌─────────▼──────────┐
-        │  Crossmint SDK    │           │  Backend API       │
-        │  (Social Wallet)  │           │  (Express/Next.js) │
-        │                   │           │                    │
-        │ • Auth (OAuth)    │           │ • Auth endpoint    │
-        │ • Stellar acct    │           │   (JWT issue)      │
-        │ • Transaction     │           │ • Pocket CRU D     │
-        │   signing         │           │ • Deposit-swap     │
-        │ • Token export    │           │ • Streaks          │
-        └────────┬──────────┘           │ • SBT check        │
-                 │                      └─────────┬──────────┘
-                 │                                │
-        ┌────────▼────────────────────────────────▼──────────┐
-        │            Stellar Testnet (Soroban RPC)           │
-        │                                                    │
-        │  ┌──────────────────────────────────────────────┐  │
-        │  │     PocketContract (Habit Tracker)           │  │
-        │  │     - Requires require_auth(owner)           │  │
-        │  │     - Does NOT hold token balances           │  │
-        │  │     - Only tracks progress counter           │  │
-        │  │                                              │  │
-        │  │ Functions (all require user signature):      │  │
-        │  │ • create_pocket(owner, asset, goal)          │  │
-        │  │ • deposit(pocket_id, from, amount)           │  │
-        │  │ • withdraw(pocket_id, to, amount)            │  │
-        │  │ • get_pocket(pocket_id)                      │  │
-        │  └──────────────────────────────────────────────┘  │
-        │                                                    │
-        │  ┌──────────────────────────────────────────────┐  │
-        │  │     SBTContract (Achievement Token)          │  │
-        │  │     - Requires require_auth(admin)           │  │
-        │  │     - Issues non-transferable SBTs           │  │
-        │  │                                              │  │
-        │  │ Functions:                                   │  │
-        │  │ • mint(to, metadata) - admin only            │  │
-        │  │ • has_sbt(owner)                             │  │
-        │  │ • update_admin(new_admin) - admin only       │  │
-        │  └──────────────────────────────────────────────┘  │
-        │                                                    │
-        │  Soroswap Router (liquidity for swaps)             │
-        │  Horizon API (read-only Stellar state)             │
-        └────────────────────────────────────────────────────┘
-                 │
-        ┌────────▼──────────────┐
-        │  Supabase PostgreSQL  │
-        │                       │
-        │ • users               │
-        │ • pockets             │
-        │ • deposits            │
-        │ • streaks             │
-        │ • sbt_status          │
-        └───────────────────────┘
-```
-
-### Folder Structure
-
-```
-apps/web/
-├── app/
-│   ├── layout.tsx              
-│   ├── page.tsx                
-│   ├── auth/
-│   │   └── callback.tsx        
-│   ├── dashboard/
-│   │   ├── page.tsx            
-│   │   ├── pockets/
-│   │   │   ├── page.tsx        
-│   │   │   ├── [id]/
-│   │   │   │   ├── page.tsx    
-│   │   │   │   └── deposit.tsx 
-│   │   │   └── create.tsx      
-│   │   ├── streaks/
-│   │   │   └── page.tsx        
-│   │   └── avatar/
-│   │       └── page.tsx        
-│   └── api/
-│       ├── auth/
-│       │   ├── callback.ts     
-│       │   └── user.ts         
-│       ├── pockets/
-│       │   ├── route.ts        
-│       │   ├── [id]/
-│       │   │   ├── route.ts    
-│       │   │   └── deposit.ts  
-│       │   └── create.ts       
-│       ├── avatar/
-│       │   └── route.ts        
-│       └── streaks/
-│           └── route.ts        
-│
-├── hooks/
-│   ├── useCrossmintAuth.ts     
-│   ├── usePockets.ts           
-│   ├── useDeposit.ts           
-│   ├── useStreaks.ts           
-│   └── useStellarBalance.ts    
-│
-├── contexts/
-│   ├── AuthContext.tsx         
-│   ├── PocketsContext.tsx      
-│   └── StreamsContext.tsx      
-│
-├── components/
-│   ├── Navbar.tsx              
-│   ├── WalletDisplay.tsx       
-│   ├── PocketCard.tsx          
-│   ├── DepositForm.tsx         
-│   ├── StreakBar.tsx           
-│   ├── AvatarPreview.tsx       
-│   ├── LoadingSpinner.tsx      
-│   └── ErrorBoundary.tsx       
-│
-├── lib/
-│   ├── config.ts               
-│   ├── crossmint.ts            
-│   ├── soroban.ts              
-│   └── types.ts                
-│
-├── styles/
-│   └── globals.css             
-│
-└── package.json
-
-```
-
-apps/backend/
-├── src/
-│   ├── main.ts                    
-│   ├── config/
-│   │   ├── env.ts                
-│   │   ├── stellar.ts             
-│   │   └── database.ts           
-│   │
-│   ├── routes/
-│   │   ├── auth.ts                
-│   │   ├── pockets.ts             
-│   │   ├── deposits.ts            
-│   │   ├── streaks.ts             
-│   │   └── sbt.ts                 
-│   │
-│   ├── services/
-│   │   ├── authService.ts         
-│   │   ├── pocketService.ts       
-│   │   ├── sbtService.ts          
-│   │   ├── depositService.ts      
-│   │   ├── soroswapService.ts     
-│   │   ├── streakService.ts       
-│   │   └── horizonService.ts      
-│   │
-│   ├── middlewares/
-│   │   ├── authMiddleware.ts      
-│   │   ├── errorHandler.ts        
-│   │   └── logging.ts             
-│   │
-│   ├── jobs/
-│   │   ├── calculateStreaks.ts    
-│   │   └── mintSBTs.ts            
-│   │
-│   └── types/
-│       ├── auth.ts
-│       ├── pocket.ts
-│       ├── deposit.ts
-│       ├── streak.ts
-│       └── sbt.ts
-│
-├── migrations/
-│   ├── 001_init_schema.sql
-│   ├── 002_add_streaks_table.sql
-│   └── 003_add_sbt_status.sql
-│
-├── prisma/
-│   └── schema.prisma              
-│
-├── .env.example
-├── package.json
-└── tsconfig.json
+┌─────────────────────────────────────────────────────────────┐
+│                    VisionMe Frontend (React)                │
+│                                                             │
+└────────────┬────────────────────────────────┬───────────────┘
+             │                                │
+             ▼                                ▼
+    ┌────────────────┐              ┌──────────────────┐
+    │ Social Wallet  │              │  Backend APIs    │
+    │      SDK       │              │  (Next.js +      │
+    │                │              │   Supabase)      │
+    └────────┬───────┘              └────────┬─────────┘
+             │                               │
+             ▼                               ▼
+    ┌────────────────┐              ┌──────────────────┐
+    │  Stellar       │              │   Supabase       │
+    │  Social        │              │   Postgres       │
+    │  Account       │              │                  │
+    └────────────────┘              └──────────────────┘
+             │
+             │
+             ▼
+    ┌─────────────────────────────────────────────────┐
+    │          Stellar Testnet                        │
+    │  ┌─────────────────┐  ┌──────────────────┐      │
+    │  │ PocketContract  │  │  SBTContract     │      │
+    │  │   (Soroban)     │  │   (Soroban)      │      │
+    │  └─────────────────┘  └──────────────────┘      │
+    └─────────────────────────────────────────────────┘
 ```
 
 ### Component Responsibilities
 
 #### Frontend (React + Next.js)
-- **Framework**: Next.js 16 (React 19)
-- **Styling**: CSS
-- **Wallet Integration**: Crossmint Social Wallet SDK
-- **Blockchain SDK**: @stellar/stellar-sdk
-- **State Management**: React Context + hooks
-- **HTTP Client**: fetch API
-
-
+- VisionMe dashboard UI
+- Stellar Social Wallet SDK integration
+- Direct Soroban contract interaction
+- Avatar visualization and animations
+- Streak and progress display
 
 #### Backend (Next.js API + Supabase)
 - Map Web2 identity ↔ Stellar publicKey
