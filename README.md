@@ -21,7 +21,7 @@
 
 ##  Overview
 
-FutureMe is an emotional savings application: a habit-building platform guided by an avatar representing the user’s Future Self, built on the Stellar network, with Soroban smart contracts that automate micro-savings in a secure, transparent, and efficient way.
+VisionMe is an emotional savings application: a habit-building platform guided by an avatar representing the user’s Future Self, built on the Stellar network, with Soroban smart contracts that automate micro-savings in a secure, transparent, and efficient way.
 
 ### Target User: Lucia's Story
 
@@ -247,4 +247,5 @@ MIT License - see [LICENSE](LICENSE) file for details
   <strong>Built with ❤️‍🔥 for Stellar Hack+ 2025</strong>
   <br>
   <em>Transforming financial habits, one micro-saving at a time</em>
+
 </p>
