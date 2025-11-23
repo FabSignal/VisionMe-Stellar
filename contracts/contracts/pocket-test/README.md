@@ -1,73 +1,73 @@
-# VisionMe Pocket Contract - Test Suite con DeFindex
+# VisionMe Pocket Contract - Test Suite with DeFindex
 
-## Descripción General
+## Overview
 
-Este documento contiene la suite de pruebas completa para el contrato inteligente **VisionMe Pocket** en la red Stellar Testnet, integrado con el protocolo **DeFindex** para la generación automática de rendimientos sobre depósitos en USDC.
+This document contains the complete test suite for the **VisionMe Pocket** smart contract on the Stellar Testnet, integrated with the **DeFindex** protocol for automatic yield generation on USDC deposits.
 
-## Propósito
+## Purpose
 
-El script `pocket-test-complete.ts` está diseñado para:
+The `pocket-test-complete.ts` script is designed to:
 
-1. **Validar la integración** entre el contrato Pocket y el vault de DeFindex
-2. **Probar el flujo completo** de creación de pockets y depósitos
-3. **Verificar la generación automática** de rendimientos a través de dfTokens
-4. **Calcular y proyectar** yields basados en APY del protocolo DeFindex
-5. **Monitorear el estado** del vault y los balances en tiempo real
+1. **Validate the integration** between the Pocket contract and the DeFindex vault
+2. **Test the complete flow** of pocket creation and deposits
+3. **Verify automatic generation** of yields through dfTokens
+4. **Calculate and project** yields based on DeFindex protocol APY
+5. **Monitor the status** of the vault and balances in real-time
 
-## Arquitectura del Sistema
+## System Architecture
 
-### Componentes Principales
+### Main Components
 
-- **Pocket Contract**: Gestiona los "bolsillos" de ahorro de los usuarios
-- **DeFindex Vault**: Protocolo de yield farming que genera rendimientos
-- **USDC Token**: Asset base para depósitos y cálculos
-- **dfTokens**: Tokens de participación en el vault que representan el capital + rendimientos
+- **Pocket Contract**: Manages users' savings "pockets"
+- **DeFindex Vault**: Yield farming protocol that generates returns
+- **USDC Token**: Base asset for deposits and calculations
+- **dfTokens**: Vault participation tokens representing capital + yields
 
-### Flujo de Funcionamiento
+### Operating Flow
 
 ```
-Usuario → Depósito USDC → Pocket Contract → DeFindex Vault → dfTokens
+User → USDC Deposit → Pocket Contract → DeFindex Vault → dfTokens
                                                 ↓
-                                        Generación de Yield
+                                        Yield Generation
                                                 ↓
-                                    Incremento del valor de dfTokens
+                                    Increase in dfTokens value
 ```
 
-## Funcionalidades Implementadas
+## Implemented Features
 
-### 1. Gestión de Contratos
+### 1. Contract Management
 
-- **`initializeContract()`**: Inicializa el contrato Pocket con las direcciones del vault y asset
-- **`invokeContract()`**: Función genérica para invocar métodos de contratos con manejo de errores y confirmación de transacciones
+- **`initializeContract()`**: Initializes the Pocket contract with vault and asset addresses
+- **`invokeContract()`**: Generic function to invoke contract methods with error handling and transaction confirmation
 
-### 2. Operaciones de Pocket
+### 2. Pocket Operations
 
-#### Creación y Consulta
-- **`createPocket()`**: Crea un nuevo pocket con un objetivo de ahorro definido
-- **`getPocket()`**: Obtiene los datos completos de un pocket
-- **`getPocketWithYield()`**: Obtiene pocket, valor real y yield en una sola llamada (optimizado)
+#### Creation and Query
+- **`createPocket()`**: Creates a new pocket with a defined savings goal
+- **`getPocket()`**: Retrieves complete pocket data
+- **`getPocketWithYield()`**: Gets pocket, real value, and yield in a single call (optimized)
 
-#### Depósitos y Retiros
-- **`deposit()`**: Deposita USDC que automáticamente se invierte en DeFindex
-- **`withdraw()`**: Retira dfTokens del pocket
+#### Deposits and Withdrawals
+- **`deposit()`**: Deposits USDC that automatically gets invested in DeFindex
+- **`withdraw()`**: Withdraws dfTokens from the pocket
 
-### 3. Análisis de Rendimientos
+### 3. Yield Analysis
 
-- **`getRealValue()`**: Calcula el valor actual del pocket incluyendo yield generado
-- **`getYieldEarned()`**: Obtiene el rendimiento acumulado
-- **`calculateAPY()`**: Calcula el APY (Annual Percentage Yield) actual
+- **`getRealValue()`**: Calculates the current value of the pocket including generated yield
+- **`getYieldEarned()`**: Gets accumulated yield
+- **`calculateAPY()`**: Calculates the current APY (Annual Percentage Yield)
 
-### 4. Integración con DeFindex
+### 4. DeFindex Integration
 
-- **`getVaultBalance()`**: Consulta el balance total del vault de DeFindex
-- **`getDfTokenValue()`**: Calcula el valor en USDC de una cantidad de dfTokens
+- **`getVaultBalance()`**: Queries the total balance of the DeFindex vault
+- **`getDfTokenValue()`**: Calculates the USDC value of a quantity of dfTokens
 
-### 5. Utilidades
+### 5. Utilities
 
-- **`formatAmount()`**: Formatea cantidades con decimales para visualización
-- **`delay()`**: Función auxiliar para esperas entre operaciones
+- **`formatAmount()`**: Formats amounts with decimals for display
+- **`delay()`**: Helper function for delays between operations
 
-## Configuración
+## Configuration
 
 ```typescript
 const CONFIG = {
@@ -81,67 +81,67 @@ const CONFIG = {
 };
 ```
 
-## Flujo de Prueba Completo
+## Complete Test Flow
 
-### PASO 1: Creación de Cuenta
-- Genera un keypair aleatorio
-- Solicita airdrop de XLM para fees
+### STEP 1: Account Creation
+- Generates a random keypair
+- Requests XLM airdrop for fees
 
-### PASO 2: Inicialización
-- Verifica o inicializa el contrato Pocket
-- Configura las direcciones del vault y asset
+### STEP 2: Initialization
+- Verifies or initializes the Pocket contract
+- Configures vault and asset addresses
 
-### PASO 3: Creación de Pocket
-- Crea un pocket con objetivo de 1000 USDC
-- Obtiene el pocket_id para operaciones posteriores
+### STEP 3: Pocket Creation
+- Creates a pocket with a 1000 USDC goal
+- Obtains the pocket_id for subsequent operations
 
-### PASO 4: Primer Depósito
-- Deposita 10 USDC
-- El contrato automáticamente invierte en DeFindex
-- Recibe dfTokens a cambio
+### STEP 4: First Deposit
+- Deposits 10 USDC
+- Contract automatically invests in DeFindex
+- Receives dfTokens in return
 
-### PASO 5: Verificación Post-Depósito
-- Consulta el estado del pocket
-- Verifica la cantidad de dfTokens recibidos
-- Calcula el progreso hacia el objetivo
+### STEP 5: Post-Deposit Verification
+- Queries the pocket status
+- Verifies the amount of dfTokens received
+- Calculates progress toward the goal
 
-### PASO 6: Consulta del Vault
-- Obtiene el balance total administrado por DeFindex
-- Consulta el total de shares (dfTokens emitidos)
-- Verifica las fees del vault
+### STEP 6: Vault Query
+- Gets the total balance managed by DeFindex
+- Queries the total shares (dfTokens issued)
+- Verifies vault fees
 
-### PASO 7: Cálculo de Valor Real
-- Calcula el valor actual de los dfTokens
-- Compara con el monto depositado
-- Determina el yield generado
+### STEP 7: Real Value Calculation
+- Calculates the current value of dfTokens
+- Compares with deposited amount
+- Determines generated yield
 
-### PASO 8: Segundo Depósito
-- Deposita 5 USDC adicionales
-- Actualiza el balance de dfTokens
+### STEP 8: Second Deposit
+- Deposits an additional 5 USDC
+- Updates dfTokens balance
 
-### PASO 9: Balance Actualizado
-- Muestra el total depositado
-- Calcula el progreso total
+### STEP 9: Updated Balance
+- Shows total deposited
+- Calculates total progress
 
-### PASO 10: Proyección de Rendimientos
-- Proyecta yields basados en 6% APY típico
-- Muestra rendimientos esperados para 1 día, 7 días, 30 días y 1 año
+### STEP 10: Yield Projection
+- Projects yields based on typical 6% APY
+- Shows expected returns for 1 day, 7 days, 30 days, and 1 year
 
-## Datos de Salida
+## Output Data
 
-El test proporciona información detallada sobre:
+The test provides detailed information about:
 
-- ✅ **Confirmación de transacciones** con hashes y links a Stellar Expert
-- 📊 **Progreso del pocket** hacia el objetivo
-- 💎 **Cantidad de dfTokens** acumulados
-- 📈 **Valor real** del pocket (capital + yield)
-- ✨ **Yield generado** en USDC
-- 💹 **Porcentaje de rendimiento** actual
-- 🏦 **Estado del vault** de DeFindex
+- ✅ **Transaction confirmation** with hashes and links to Stellar Expert
+- 📊 **Pocket progress** toward the goal
+- 💎 **Amount of dfTokens** accumulated
+- 📈 **Real value** of the pocket (capital + yield)
+- ✨ **Generated yield** in USDC
+- 💹 **Current yield percentage**
+- 🏦 **DeFindex vault status**
 
-## Casos de Uso
+## Use Cases
 
-### 1. Reporte de Rendimientos Completo
+### 1. Complete Yield Report
 
 ```typescript
 const pocketData = await getPocket(pocketId, caller);
@@ -150,64 +150,64 @@ const yieldEarned = await getYieldEarned(pocketId, caller);
 const apy = await calculateAPY(pocketId, caller);
 ```
 
-### 2. Consulta Optimizada
+### 2. Optimized Query
 
 ```typescript
 const { pocket, realValue, yieldEarned } = await getPocketWithYield(pocketId, caller);
 ```
 
-## Monitoreo en Tiempo Real
+## Real-Time Monitoring
 
-El script proporciona links para:
+The script provides links for:
 
-- **Stellar Expert**: Visualizar transacciones y operaciones
-- **DeFindex Dashboard**: Monitorear el estado del vault (si está disponible)
-- **Consultas periódicas**: Verificar el crecimiento del yield
+- **Stellar Expert**: View transactions and operations
+- **DeFindex Dashboard**: Monitor vault status (if available)
+- **Periodic queries**: Verify yield growth
 
-## Consideraciones Importantes
+## Important Considerations
 
-### Generación de Yield
-- Los rendimientos se acumulan con el tiempo
-- El APY típico es de 5-8%
-- Se recomienda esperar 24-48 horas para ver rendimientos significativos
+### Yield Generation
+- Yields accumulate over time
+- Typical APY is 5-8%
+- It's recommended to wait 24-48 hours to see significant returns
 
-### Cálculo de Valor
-La fórmula para calcular el valor real es:
+### Value Calculation
+The formula to calculate real value is:
 ```
-valor_actual = (dfTokens × total_managed_funds) / total_shares
-yield = valor_actual - current_amount
+current_value = (dfTokens × total_managed_funds) / total_shares
+yield = current_value - current_amount
 ```
 
-### Manejo de Errores
-- Validación de simulación antes de envío
-- Timeout de 180 segundos para operaciones complejas
-- Fees elevados (10,000,000 stroops) para garantizar ejecución
+### Error Handling
+- Simulation validation before submission
+- 180-second timeout for complex operations
+- High fees (10,000,000 stroops) to guarantee execution
 
-## Estructura de Datos
+## Data Structures
 
 ### PocketData
 ```typescript
 interface PocketData {
-  owner: string;           // Dirección del propietario
-  asset: string;           // Dirección del token (USDC)
-  goal_amount: bigint;     // Objetivo de ahorro
-  current_amount: bigint;  // Cantidad depositada
-  df_tokens: bigint;       // dfTokens acumulados
-  first_deposit?: bigint;  // Timestamp del primer depósito
-  last_deposit?: bigint;   // Timestamp del último depósito
+  owner: string;           // Owner's address
+  asset: string;           // Token address (USDC)
+  goal_amount: bigint;     // Savings goal
+  current_amount: bigint;  // Deposited amount
+  df_tokens: bigint;       // Accumulated dfTokens
+  first_deposit?: bigint;  // First deposit timestamp
+  last_deposit?: bigint;   // Last deposit timestamp
 }
 ```
 
 ### VaultBalance
 ```typescript
 interface VaultBalance {
-  total_managed_funds: bigint;  // Total de fondos en el vault
-  fee: bigint;                  // Comisión del vault
-  total_shares: bigint;         // Total de dfTokens emitidos
+  total_managed_funds: bigint;  // Total funds in the vault
+  fee: bigint;                  // Vault commission
+  total_shares: bigint;         // Total dfTokens issued
 }
 ```
 
-## Dependencias
+## Dependencies
 
 ```json
 {
@@ -215,40 +215,33 @@ interface VaultBalance {
 }
 ```
 
-## Ejecución
+## Execution
 
 ```bash
 ts-node pocket-test-complete.ts
 ```
 
-## Resultado Esperado
+## Expected Result
 
-Al finalizar exitosamente, el script muestra:
+Upon successful completion, the script displays:
 
-- ✅ Confirmación de todas las operaciones
-- 📊 Resumen completo del pocket
-- �� Instrucciones para verificar el yield en el futuro
-- 🔗 Links a exploradores de blockchain
-- 📈 Proyecciones de rendimiento
+- ✅ Confirmation of all operations
+- 📊 Complete pocket summary
+- 💡 Instructions to verify yield in the future
+- 🔗 Links to blockchain explorers
+- 📈 Yield projections
 
-## Notas de Versión
+## Version Notes
 
-Este archivo corresponde a una **versión de prueba completa** que incluye:
-- Integración real con DeFindex en Testnet
-- Cálculos de yield y APY
-- Monitoreo del vault
-- Proyecciones de rendimiento
+This file corresponds to a **complete test version** that includes:
+- Real integration with DeFindex on Testnet
+- Yield and APY calculations
+- Vault monitoring
+- Yield projections
 
-Para versiones de producción, se deben ajustar:
-- Configuración de red (Mainnet)
-- Direcciones de contratos
-- Parámetros de fees y timeouts
-- Manejo de errores para entorno productivo
+For production versions, the following should be adjusted:
+- Network configuration (Mainnet)
+- Contract addresses
+- Fee and timeout parameters
+- Error handling for production environment
 
----
-
-**Repositorio**: [VisionMe-Stellar](https://github.com/FabSignal/VisionMe-Stellar)
-
-**Red**: Stellar Testnet
-
-**Última actualización**: 2025
