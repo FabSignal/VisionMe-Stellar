@@ -3,17 +3,19 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "supabase start",
-    "stop": "supabase stop",
-    "status": "supabase status",
-    "reset": "supabase db reset",
-    "migrate": "supabase db push",
-    "types": "supabase gen types typescript --local > types/database.types.ts"
+    "dev": "node ../../node_modules/tsx/dist/cli.mjs watch src/main.ts",
+    "start": "node ../../node_modules/tsx/dist/cli.mjs src/main.ts",
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
+    "supabase:status": "supabase status",
+    "supabase:reset": "supabase db reset",
+    "supabase:migrate": "supabase db push",
+    "supabase:types": "supabase gen types typescript --local > types/database.types.ts"
   },
   "devDependencies": {
     "supabase": "^1.200.3"
   },
   "dependencies": {
-    "@soroswap/sdk": "^0.3.8"
+    "@crossmint/server-sdk": "^1.2.49"
   }
 }
